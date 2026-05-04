@@ -725,16 +725,21 @@ let dragging = false;
 let lastX = 0;
 let lastT = 0;
 let lastDelta = 0;
+let dragStartX = 0;
+let dragStartY = 0;
 
 // Pointer down - start dragging
 stage.addEventListener('pointerdown', (e) => {
   if (isEntering) return;
   if (e.target.closest('.frame')) return;
+  if (window.detailsHandler && window.detailsHandler.SHOW_DETAILS) return;
   
   dragging = true;
   lastX = e.clientX;
   lastT = performance.now();
   lastDelta = 0;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
   stage.setPointerCapture(e.pointerId);
   stage.classList.add('dragging');
 });
@@ -760,6 +765,17 @@ stage.addEventListener('pointerup', (e) => {
   stage.releasePointerCapture(e.pointerId);
   vX = -lastDelta * DRAG_SENS; // Apply final velocity
   stage.classList.remove('dragging');
+  
+  // Phát hiện click (nếu không di chuyển nhiều)
+  const dist = Math.abs(e.clientX - dragStartX) + Math.abs(e.clientY - dragStartY);
+  if (dist < 10 && window.detailsHandler && !window.detailsHandler.SHOW_DETAILS) {
+    // Ẩn tạm thời pointer-events của cards để lấy đúng card bên dưới
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const card = target ? target.closest('.card') : null;
+    if (card) {
+      window.detailsHandler.showDetails(card);
+    }
+  }
 });
 
 // Debounced resize handler
@@ -1000,7 +1016,8 @@ class DetailsHandler {
   }
   
   initEvents() {
-    // Lắng nghe click lên container chứa cards (Event Delegation)
+    // Chúng ta đã xử lý click trong pointerup của stage,
+    // nhưng vẫn giữ sự kiện click phòng trường hợp chạy trên các thiết bị khác
     this.cardsRoot.addEventListener('click', (e) => {
       if (this.SHOW_DETAILS) return;
       
@@ -1106,8 +1123,15 @@ class DetailsHandler {
     // Chuyển sang container mới
     this.detailsThumb.appendChild(product);
     
-    // Xoá các transform 3D của carousel để không xung đột
-    gsap.set(product, { clearProps: "transform,filter,zIndex" });
+    // Ghi đè các thuộc tính CSS cố định của .card để vừa với .detailsThumb
+    gsap.set(product, { 
+      clearProps: "transform,filter,zIndex",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      margin: 0
+    });
     
     // Flip animate
     Flip.from(state, {
@@ -1130,6 +1154,9 @@ class DetailsHandler {
     
     // Đưa về lại DOM ban đầu
     this.originalParent.appendChild(this.currentProduct);
+    
+    // Xoá các thuộc tính ghi đè để CSS gốc của .card có tác dụng lại
+    gsap.set(this.currentProduct, { clearProps: "top,left,width,height,margin" });
     
     // Cập nhật lại transform 3D cho đúng vị trí của carousel
     updateCarouselTransforms();
