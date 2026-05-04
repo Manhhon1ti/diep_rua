@@ -732,7 +732,6 @@ let dragStartY = 0;
 stage.addEventListener('pointerdown', (e) => {
   if (isEntering) return;
   if (e.target.closest('.frame')) return;
-  if (window.detailsHandler && window.detailsHandler.SHOW_DETAILS) return;
   
   dragging = true;
   lastX = e.clientX;
@@ -766,14 +765,43 @@ stage.addEventListener('pointerup', (e) => {
   vX = -lastDelta * DRAG_SENS; // Apply final velocity
   stage.classList.remove('dragging');
   
-  // Phát hiện click (nếu không di chuyển nhiều)
+  // Phát hiện drag hay click
   const dist = Math.abs(e.clientX - dragStartX) + Math.abs(e.clientY - dragStartY);
-  if (dist < 10 && window.detailsHandler && !window.detailsHandler.SHOW_DETAILS) {
-    // Ẩn tạm thời pointer-events của cards để lấy đúng card bên dưới
+  if (dist > 10) {
+    window.wasDragged = true;
+    setTimeout(() => { window.wasDragged = false; }, 50); // Reset nhanh sau sự kiện drag
+  } else {
+    // Là thao tác click! 
+    // Chúng ta phải xử lý click thủ công ở đây vì sự kiện pointerCapture đã chặn native click
+    window.ignoreNativeClick = true;
+    setTimeout(() => { window.ignoreNativeClick = false; }, 50);
+    
     const target = document.elementFromPoint(e.clientX, e.clientY);
     const card = target ? target.closest('.card') : null;
-    if (card) {
-      window.detailsHandler.showDetails(card);
+    
+    if (window.detailsHandler) {
+      if (card) {
+        if (window.detailsHandler.SHOW_DETAILS) {
+          // Nếu click vào chính ảnh đang mở (hoặc clone), thì đóng bảng
+          if (card === window.detailsHandler.currentProduct || card === window.detailsHandler.placeholderClone) {
+            window.detailsHandler.hideDetails();
+          } else {
+            // Đổi sang ảnh khác ngay lập tức (không chạy animation bay về của ảnh cũ)
+            window.detailsHandler.unFlipProduct(true);
+            window.detailsHandler.titles.forEach(title => gsap.set(title.querySelectorAll('.char'), { y: "100%" }));
+            window.detailsHandler.texts.forEach(text => gsap.set(text.querySelectorAll('.line'), { y: "100%" }));
+            window.detailsHandler.showDetails(card);
+          }
+        } else {
+          // Mở bảng
+          window.detailsHandler.showDetails(card);
+        }
+      } else {
+        // Click vào khoảng trống của vòng xoay khi đang mở bảng
+        if (window.detailsHandler.SHOW_DETAILS) {
+          window.detailsHandler.hideDetails();
+        }
+      }
     }
   }
 });
@@ -1016,22 +1044,17 @@ class DetailsHandler {
   }
   
   initEvents() {
-    // Chúng ta đã xử lý click trong pointerup của stage,
-    // nhưng vẫn giữ sự kiện click phòng trường hợp chạy trên các thiết bị khác
-    this.cardsRoot.addEventListener('click', (e) => {
-      if (this.SHOW_DETAILS) return;
-      
-      const card = e.target.closest('.card');
-      if (card) {
-        e.stopPropagation();
-        this.showDetails(card);
-      }
-    });
+    // Mọi logic click thẻ bài đã được gộp chung vào sự kiện pointerup của vòng xoay 
+    // (tại dòng ~768) vì pointerCapture ngăn chặn sự kiện click nguyên thủy.
     
-    // Click cross hoặc click ra ngoài để đóng
-    this.cross.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (this.SHOW_DETAILS) this.hideDetails();
+    // Click bất kỳ đâu (trừ nút bấm) để đóng bảng chi tiết
+    document.addEventListener('click', (e) => {
+      if (window.wasDragged) return; // Bỏ qua nếu người dùng vừa kéo vòng xoay xong
+      if (window.ignoreNativeClick) return; // Bỏ qua vì đã xử lý thủ công trong pointerup
+      
+      if (this.SHOW_DETAILS && e.target.tagName !== 'BUTTON') {
+        this.hideDetails();
+      }
     });
     
     // Hiệu ứng di chuột cho nút X
@@ -1048,19 +1071,27 @@ class DetailsHandler {
   }
   
   showDetails(product) {
+    // Nếu đang có thẻ ảnh cũ chưa kịp dọn (ví dụ đang đóng dở), dọn ngay lập tức
+    if (this.currentProduct) {
+      this.unFlipProduct(true);
+    }
+    
     this.SHOW_DETAILS = true;
     
-    // Tạm dừng vòng xoay carousel
-    cancelCarousel();
+    // (Bỏ lệnh cancelCarousel để vòng xoay vẫn tiếp tục xoay)
     
-    this.details.classList.add('--is-showing');
-    this.dom.classList.add('--is-details-showing');
+    this.cardsRoot.classList.add('transition-filters');
+    
+    requestAnimationFrame(() => {
+      this.details.classList.add('--is-showing');
+      this.dom.classList.add('--is-details-showing');
+    });
     
     // Hiệu ứng đẩy nền sang trái một chút
-    gsap.to(this.dom, { x: "-15vw", duration: 1.2, ease: "power3.inOut" });
+    gsap.to(this.dom, { x: "-15vw", duration: 1.5, ease: "power4.inOut" });
     
     // Trượt bảng chi tiết vào
-    gsap.to(this.details, { x: 0, duration: 1.2, ease: "power3.inOut" });
+    gsap.to(this.details, { x: 0, duration: 1.5, ease: "power4.inOut" });
     
     this.flipProduct(product);
     
@@ -1071,12 +1102,12 @@ class DetailsHandler {
     
     if (title) {
       gsap.to(title.querySelectorAll('.char'), {
-        y: 0, duration: 1.1, delay: 0.4, ease: "power3.inOut", stagger: 0.025
+        y: 0, duration: 1.2, delay: 0.5, ease: "power4.out", stagger: 0.03
       });
     }
     if (text) {
       gsap.to(text.querySelectorAll('.line'), {
-        y: 0, duration: 1.1, delay: 0.4, ease: "power3.inOut", stagger: 0.05
+        y: 0, duration: 1.2, delay: 0.5, ease: "power4.out", stagger: 0.05
       });
     }
   }
@@ -1085,31 +1116,31 @@ class DetailsHandler {
     this.SHOW_DETAILS = false;
     this.dom.classList.remove('--is-details-showing');
     
+    // Ẩn nút X ngay
+    gsap.to(this.cross, { scale: 0, duration: 0.3 });
+    
     // Đẩy nền về chỗ cũ
-    gsap.to(this.dom, {
-      x: 0, duration: 1.2, delay: 0.3, ease: "power3.inOut",
+    gsap.to(this.dom, { x: 0, duration: 0.5, ease: "power2.out" });
+    this.cardsRoot.classList.remove('transition-filters');
+    
+    // Đẩy bảng chi tiết ra ngoài (kéo theo cả thẻ ảnh bên trong)
+    gsap.to(this.details, {
+      x: "100%", duration: 0.5, ease: "power2.out",
       onComplete: () => {
         this.details.classList.remove('--is-showing');
-        // Tiếp tục quay carousel
-        startCarousel();
+        // Chỉ khi bảng đã trượt hẳn ra ngoài, ta mới âm thầm đưa ảnh về background
+        if (!this.SHOW_DETAILS) {
+          this.unFlipProduct(true);
+        }
       }
     });
     
-    // Đẩy bảng chi tiết ra ngoài
-    gsap.to(this.details, { x: "100%", duration: 1.2, delay: 0.3, ease: "power3.inOut" });
-    
-    this.unFlipProduct();
-    
     // Ẩn chữ đi
     this.titles.forEach(title => {
-      gsap.to(title.querySelectorAll('.char'), {
-        y: "100%", duration: 0.6, ease: "power3.inOut", stagger: { amount: 0.025, from: "end" }
-      });
+      gsap.to(title.querySelectorAll('.char'), { y: "100%", duration: 0.4, ease: "power2.in" });
     });
     this.texts.forEach(text => {
-      gsap.to(text.querySelectorAll('.line'), {
-        y: "100%", duration: 0.6, ease: "power3.inOut", stagger: 0.05
-      });
+      gsap.to(text.querySelectorAll('.line'), { y: "100%", duration: 0.4, ease: "power2.in" });
     });
   }
   
@@ -1119,6 +1150,17 @@ class DetailsHandler {
     
     // Ghi lại trạng thái trước khi chuyển
     const state = Flip.getState(product);
+    
+    // Tạo bản sao để lấp chỗ trống trong vòng quay (để tự nhiên hòa vào các thẻ background)
+    this.placeholderClone = product.cloneNode(true);
+    this.originalParent.insertBefore(this.placeholderClone, product);
+    
+    // Đánh tráo phần tử trong mảng items để vòng quay tiếp tục quay bản sao này!
+    const item = items.find(it => it.el === product);
+    if (item) {
+      item.el = this.placeholderClone;
+      this.placeholderItem = item;
+    }
     
     // Chuyển sang container mới
     this.detailsThumb.appendChild(product);
@@ -1136,41 +1178,61 @@ class DetailsHandler {
     // Flip animate
     Flip.from(state, {
       absolute: true,
-      duration: 1.2,
-      ease: "power3.inOut"
+      duration: 1.5,
+      ease: "power4.inOut"
     });
     
     // Hiện dấu X
     gsap.to(this.cross, { scale: 1, duration: 0.4, delay: 0.5, ease: "power2.out" });
   }
   
-  unFlipProduct() {
+  unFlipProduct(isSwitching = false) {
     if (!this.currentProduct || !this.originalParent) return;
     
-    // Ẩn dấu X
-    gsap.to(this.cross, { scale: 0, duration: 0.4, ease: "power2.out" });
+    const productToUnflip = this.currentProduct;
+    const cloneToRemove = this.placeholderClone;
     
-    const state = Flip.getState(this.currentProduct);
+    // Ẩn dấu X
+    gsap.to(this.cross, { scale: 0, duration: 0.3 });
+    
+    const state = Flip.getState(productToUnflip);
     
     // Đưa về lại DOM ban đầu
-    this.originalParent.appendChild(this.currentProduct);
+    this.originalParent.appendChild(productToUnflip);
     
     // Xoá các thuộc tính ghi đè để CSS gốc của .card có tác dụng lại
-    gsap.set(this.currentProduct, { clearProps: "top,left,width,height,margin" });
+    gsap.set(productToUnflip, { clearProps: "top,left,width,height,margin" });
+    
+    // Trả lại ảnh thật vào mảng items để nó tiếp tục quay
+    if (this.placeholderItem) {
+      this.placeholderItem.el = productToUnflip;
+      this.placeholderItem = null;
+    }
     
     // Cập nhật lại transform 3D cho đúng vị trí của carousel
     updateCarouselTransforms();
     
-    Flip.from(state, {
-      absolute: true,
-      duration: 1.2,
-      delay: 0.3,
-      ease: "power3.inOut",
-      onComplete: () => {
-        this.currentProduct = null;
-        this.originalParent = null;
-      }
-    });
+    // Giải phóng bộ nhớ toàn cục để nếu có switch thì thẻ mới không bị lỗi
+    this.currentProduct = null;
+    this.originalParent = null;
+    this.placeholderClone = null;
+    
+    if (isSwitching) {
+      // Nếu đang switch ảnh khác, cho ảnh cũ bay về ngay lập tức (không tạo hiệu ứng bay)
+      if (cloneToRemove) cloneToRemove.remove();
+    } else {
+      // Nếu đóng bảng bình thường, bay về vị trí cũ với tốc độ 0.5s
+      Flip.from(state, {
+        absolute: true,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+          if (cloneToRemove) {
+            cloneToRemove.remove();
+          }
+        }
+      });
+    }
   }
 }
 
