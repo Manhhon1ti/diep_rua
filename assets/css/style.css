@@ -1,0 +1,112 @@
+/* ============================================================
+   RESET CSS — Xóa style mặc định của trình duyệt
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+}
+
+img, video, svg {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+/* ============================================================
+   VARIABLES — Định nghĩa biến màu sắc, font, spacing...
+   ============================================================ */
+:root {
+  --color-primary: #000;       /* Màu chính */
+  --color-secondary: #fff;     /* Màu phụ */
+  --color-accent: #e63946;     /* Màu nhấn */
+  --color-text: #333;          /* Màu chữ */
+  --color-bg: #fff;            /* Màu nền */
+
+  --font-main: sans-serif;     /* Font chính */
+
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
+
+  --max-width: 1200px;
+  --border-radius: 8px;
+}
+
+/* ============================================================
+   LAYOUT HELPERS
+   ============================================================ */
+.container {
+  width: 90%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* ============================================================
+   HEADER
+   Thêm style cho header tại đây
+   ============================================================ */
+
+
+/* ============================================================
+   HERO / BANNER
+   Thêm style cho hero section tại đây
+   ============================================================ */
+
+
+/* ============================================================
+   SECTION 1
+   Thêm style cho section 1 tại đây
+   ============================================================ */
+
+
+/* ============================================================
+   SECTION 2
+   Thêm style cho section 2 tại đây
+   ============================================================ */
+
+
+/* ============================================================
+   FOOTER
+   Thêm style cho footer tại đây
+   ============================================================ */
+
+
+/* ============================================================
+   RESPONSIVE — Media queries
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Thêm style responsive cho tablet */
+}
+
+@media (max-width: 480px) {
+  /* Thêm style responsive cho mobile */
+}

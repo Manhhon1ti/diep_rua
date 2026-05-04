@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Mô tả trang web của bạn" />
+  <title>Tên Website</title>
+
+  <!-- ========================
+       LINK CSS
+  ======================== -->
+  <!-- Base & Carousel styles (từ gradientslider) -->
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/carousel.css" />
+  <!-- Style chính của dự án -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       3D GRADIENT CAROUSEL
+       (từ https://github.com/clementgrellier/gradientslider)
+       - Kéo / cuộn chuột để điều hướng
+       - Background gradient tự động thay đổi theo ảnh hiện tại
+  ============================================================ -->
+  <main class="stage" aria-live="polite">
+
+    <!-- Header carousel (tuỳ chỉnh hoặc xoá đi) -->
+    <header class="frame">
+      <h1 class="frame__title">Infinite Gradient 3D Carousel</h1>
+    </header>
+
+    <!-- Loader overlay -->
+    <div id="loader" class="loader" aria-label="Đang tải" aria-live="assertive">
+      <div class="loader__content">
+        <div class="loader__ring" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- Canvas nền gradient động -->
+    <canvas id="bg" aria-hidden="true"></canvas>
+
+    <!-- Vùng chứa các card ảnh (JS tự tạo) -->
+    <section id="cards" class="cards" aria-label="Vòng carousel ảnh vô hạn"></section>
+
+  </main>
+
+  <!-- ========================
+       HEADER (trang)
+  ======================== -->
+  <header id="header">
+    <!-- Thêm logo, nav menu tại đây -->
+  </header>
+
+  <!-- ========================
+       HERO / BANNER
+  ======================== -->
+  <section id="hero">
+    <!-- Thêm nội dung hero section tại đây -->
+  </section>
+
+  <!-- ========================
+       MAIN CONTENT
+  ======================== -->
+  <main id="main-content">
+
+    <!-- SECTION 1 -->
+    <section id="section-1">
+      <!-- Thêm nội dung section 1 tại đây -->
+    </section>
+
+    <!-- SECTION 2 -->
+    <section id="section-2">
+      <!-- Thêm nội dung section 2 tại đây -->
+    </section>
+
+    <!-- Thêm các section khác bên dưới... -->
+
+  </main>
+
+  <!-- ========================
+       FOOTER
+  ======================== -->
+  <footer id="footer">
+    <!-- Thêm footer content tại đây -->
+  </footer>
+
+  <!-- ========================
+       LINK JS (đặt cuối body)
+  ======================== -->
+  <!-- GSAP (bắt buộc cho carousel animation) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <!-- Carousel script (từ gradientslider) -->
+  <script src="assets/js/carousel.js" defer></script>
+  <!-- JS chính của dự án -->
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
