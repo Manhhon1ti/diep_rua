@@ -1,0 +1,155 @@
+/* ============================================================
+   DETAILS PANEL (từ draggable-grid)
+   ============================================================ */
+
+/* Setup cho GSAP SplitText */
+.line,
+.char {
+  transform: translate3d(0, 100%, 0);
+}
+
+.details {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  height: 100vh;
+  padding: 3vw 4vw;
+  background-color: #f1f1f1;
+  color: #333; /* Đảm bảo chữ dễ đọc trên nền sáng */
+  transform: translate3d(50vw, 0, 0);
+  z-index: 2000; /* Cao hơn cả stage và loader */
+  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+
+  @media (max-width: 600px) {
+    width: 90%;
+    padding: 8vw 7vw;
+    transform: translate3d(90%, 0, 0);
+  }
+}
+
+.details__title {
+  margin-bottom: 4vw;
+  position: relative;
+  display: grid;
+
+  @media (max-width: 600px) {
+    margin-bottom: 8vw;
+  }
+}
+
+.details__title p {
+  grid-area: 1 / -1;
+  overflow: hidden;
+  font-size: 3vw;
+  margin: 0;
+  font-family: inherit;
+
+  @media (max-width: 600px) {
+    font-size: 2rem;
+  }
+}
+
+.details__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 2vw;
+}
+
+.details__texts {
+  position: relative;
+  height: 100%;
+  line-height: 1.5;
+  display: grid;
+  max-width: 15rem;
+}
+
+.details__texts span {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.details__texts button {
+  appearance: none;
+  border: none;
+  display: block;
+  background-color: transparent;
+  margin-top: 1.5rem;
+  border: 1px solid #333;
+  color: #333;
+  border-radius: 1rem;
+  padding: 0.25rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  @media (max-width: 600px) {
+    margin-top: 5vw;
+  }
+}
+
+.details__texts button:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.details__texts [data-text] {
+  grid-area: 1 / -1;
+  bottom: 0;
+  left: 0;
+}
+
+.details__thumb {
+  position: relative;
+  width: 25vw;
+  aspect-ratio: 1 / 1;
+  z-index: 3;
+  will-change: transform;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+.details__thumb div,
+.details__thumb img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Dùng contain để thấy rõ rùa, tuỳ chọn */
+  border-radius: 15px; /* Giữ bo góc giống card */
+}
+
+.details__texts p {
+  font-size: 0.85rem;
+  margin-bottom: 1vw;
+}
+
+.cross {
+  position: fixed;
+  width: 3vw;
+  height: 3vw;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: 2001; /* Trái lên trên cùng */
+  pointer-events: none;
+}
+
+.cross svg {
+  width: 3vw;
+  height: 3vw;
+}
+
+/* Các state classes */
+.--is-details-showing {
+  cursor: pointer;
+}
+
+.--is-details-showing .cards {
+  pointer-events: none;
+}
+
+.details.--is-showing {
+  opacity: 1;
+}

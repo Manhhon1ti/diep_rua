@@ -173,9 +173,11 @@ function createCards() {
     img.className = 'card__img';
     img.decoding = 'async';
     img.loading = 'eager';
-    img.fetchPriority = 'high';
     img.draggable = false;
     img.src = src;
+
+    // Gắn ID để link với bảng chi tiết
+    card.dataset.id = i;
 
     card.appendChild(img);
     fragment.appendChild(card);
@@ -963,6 +965,186 @@ async function init() {
 
   // Start main carousel loop
   startCarousel();
+  
+  // Khởi tạo hiệu ứng Details (Flip & SplitText) sau khi card đã load
+  window.detailsHandler = new DetailsHandler();
+}
+
+// ============================================================================
+// DETAILS VIEW INTEGRATION (Draggable Grid Effect)
+// ============================================================================
+
+class DetailsHandler {
+  constructor() {
+    // Đăng ký plugins
+    gsap.registerPlugin(Flip, SplitText);
+
+    this.dom = document.querySelector('.stage');
+    this.details = document.querySelector('.details');
+    this.detailsThumb = this.details.querySelector('.details__thumb');
+    this.cross = document.querySelector('.cross');
+    this.cardsRoot = document.getElementById('cards');
+    
+    this.titles = this.details.querySelectorAll('.details__title p');
+    this.texts = this.details.querySelectorAll('.details__body [data-text]');
+    
+    // Khởi tạo hiệu ứng chữ
+    new SplitText(this.titles, { type: "lines, chars", mask: "lines", charsClass: "char" });
+    new SplitText(this.texts, { type: "lines", mask: "lines", linesClass: "line" });
+    
+    this.SHOW_DETAILS = false;
+    this.currentProduct = null;
+    this.originalParent = null;
+    
+    this.initEvents();
+  }
+  
+  initEvents() {
+    // Lắng nghe click lên container chứa cards (Event Delegation)
+    this.cardsRoot.addEventListener('click', (e) => {
+      if (this.SHOW_DETAILS) return;
+      
+      const card = e.target.closest('.card');
+      if (card) {
+        e.stopPropagation();
+        this.showDetails(card);
+      }
+    });
+    
+    // Click cross hoặc click ra ngoài để đóng
+    this.cross.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.SHOW_DETAILS) this.hideDetails();
+    });
+    
+    // Hiệu ứng di chuột cho nút X
+    window.addEventListener('mousemove', (e) => {
+      if (this.SHOW_DETAILS) {
+        gsap.to(this.cross, {
+          x: e.clientX - this.cross.offsetWidth / 2,
+          y: e.clientY - this.cross.offsetHeight / 2,
+          duration: 0.4,
+          ease: "power2.out"
+        });
+      }
+    });
+  }
+  
+  showDetails(product) {
+    this.SHOW_DETAILS = true;
+    
+    // Tạm dừng vòng xoay carousel
+    cancelCarousel();
+    
+    this.details.classList.add('--is-showing');
+    this.dom.classList.add('--is-details-showing');
+    
+    // Hiệu ứng đẩy nền sang trái một chút
+    gsap.to(this.dom, { x: "-15vw", duration: 1.2, ease: "power3.inOut" });
+    
+    // Trượt bảng chi tiết vào
+    gsap.to(this.details, { x: 0, duration: 1.2, ease: "power3.inOut" });
+    
+    this.flipProduct(product);
+    
+    // Chạy hiệu ứng chữ
+    const id = product.dataset.id;
+    const title = this.details.querySelector(`[data-title="${id}"]`);
+    const text = this.details.querySelector(`[data-desc="${id}"]`);
+    
+    if (title) {
+      gsap.to(title.querySelectorAll('.char'), {
+        y: 0, duration: 1.1, delay: 0.4, ease: "power3.inOut", stagger: 0.025
+      });
+    }
+    if (text) {
+      gsap.to(text.querySelectorAll('.line'), {
+        y: 0, duration: 1.1, delay: 0.4, ease: "power3.inOut", stagger: 0.05
+      });
+    }
+  }
+  
+  hideDetails() {
+    this.SHOW_DETAILS = false;
+    this.dom.classList.remove('--is-details-showing');
+    
+    // Đẩy nền về chỗ cũ
+    gsap.to(this.dom, {
+      x: 0, duration: 1.2, delay: 0.3, ease: "power3.inOut",
+      onComplete: () => {
+        this.details.classList.remove('--is-showing');
+        // Tiếp tục quay carousel
+        startCarousel();
+      }
+    });
+    
+    // Đẩy bảng chi tiết ra ngoài
+    gsap.to(this.details, { x: "100%", duration: 1.2, delay: 0.3, ease: "power3.inOut" });
+    
+    this.unFlipProduct();
+    
+    // Ẩn chữ đi
+    this.titles.forEach(title => {
+      gsap.to(title.querySelectorAll('.char'), {
+        y: "100%", duration: 0.6, ease: "power3.inOut", stagger: { amount: 0.025, from: "end" }
+      });
+    });
+    this.texts.forEach(text => {
+      gsap.to(text.querySelectorAll('.line'), {
+        y: "100%", duration: 0.6, ease: "power3.inOut", stagger: 0.05
+      });
+    });
+  }
+  
+  flipProduct(product) {
+    this.currentProduct = product;
+    this.originalParent = product.parentNode;
+    
+    // Ghi lại trạng thái trước khi chuyển
+    const state = Flip.getState(product);
+    
+    // Chuyển sang container mới
+    this.detailsThumb.appendChild(product);
+    
+    // Xoá các transform 3D của carousel để không xung đột
+    gsap.set(product, { clearProps: "transform,filter,zIndex" });
+    
+    // Flip animate
+    Flip.from(state, {
+      absolute: true,
+      duration: 1.2,
+      ease: "power3.inOut"
+    });
+    
+    // Hiện dấu X
+    gsap.to(this.cross, { scale: 1, duration: 0.4, delay: 0.5, ease: "power2.out" });
+  }
+  
+  unFlipProduct() {
+    if (!this.currentProduct || !this.originalParent) return;
+    
+    // Ẩn dấu X
+    gsap.to(this.cross, { scale: 0, duration: 0.4, ease: "power2.out" });
+    
+    const state = Flip.getState(this.currentProduct);
+    
+    // Đưa về lại DOM ban đầu
+    this.originalParent.appendChild(this.currentProduct);
+    
+    // Cập nhật lại transform 3D cho đúng vị trí của carousel
+    updateCarouselTransforms();
+    
+    Flip.from(state, {
+      absolute: true,
+      duration: 1.2,
+      delay: 0.3,
+      ease: "power3.inOut",
+      onComplete: () => {
+        this.currentProduct = null;
+        this.originalParent = null;
+      }
+    });
+  }
 }
 
 // ============================================================================

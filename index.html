@@ -13,6 +13,7 @@
   <!-- Base & Carousel styles (từ gradientslider) -->
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/carousel.css" />
+  <link rel="stylesheet" href="assets/css/details.css" />
   <!-- Style chính của dự án -->
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
@@ -43,6 +44,46 @@
 
     <!-- Vùng chứa các card ảnh (JS tự tạo) -->
     <section id="cards" class="cards" aria-label="Vòng carousel ảnh vô hạn"></section>
+
+    <!-- Bảng chi tiết (Details View) -->
+    <div class="details">
+      <div class="details__title">
+        <p data-title="0" data-text>Turtle 1</p>
+        <p data-title="1" data-text>Turtle 2</p>
+        <p data-title="2" data-text>Turtle 3</p>
+        <p data-title="3" data-text>Turtle 4</p>
+        <p data-title="4" data-text>Turtle 5</p>
+        <p data-title="5" data-text>Turtle 6</p>
+        <p data-title="6" data-text>Turtle 7</p>
+        <p data-title="7" data-text>Turtle 8</p>
+        <p data-title="8" data-text>Turtle 9</p>
+        <p data-title="9" data-text>Diệp Rùa</p>
+      </div>
+      <div class="details__body">
+        <div class="details__thumb"></div>
+        <div class="details__texts">
+          <!-- 10 khối mô tả tương ứng với 10 ảnh -->
+          <p data-desc="0" data-text><span>$10,00</span>Mô tả chi tiết cho Turtle 1. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="1" data-text><span>$20,00</span>Mô tả chi tiết cho Turtle 2. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="2" data-text><span>$30,00</span>Mô tả chi tiết cho Turtle 3. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="3" data-text><span>$40,00</span>Mô tả chi tiết cho Turtle 4. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="4" data-text><span>$50,00</span>Mô tả chi tiết cho Turtle 5. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="5" data-text><span>$60,00</span>Mô tả chi tiết cho Turtle 6. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="6" data-text><span>$70,00</span>Mô tả chi tiết cho Turtle 7. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="7" data-text><span>$80,00</span>Mô tả chi tiết cho Turtle 8. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="8" data-text><span>$90,00</span>Mô tả chi tiết cho Turtle 9. Bạn có thể thay đổi nội dung này sau.<button>Xem thêm</button></p>
+          <p data-desc="9" data-text><span>Vô giá</span>Đây là Diệp Rùa! Bạn có thể thay đổi nội dung mô tả này tùy ý nhé.<button>Xem thêm</button></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dấu X để đóng -->
+    <div class="cross">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18" stroke="#313131" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M6 6L18 18" stroke="#313131" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
 
   </main>
 
@@ -91,7 +132,10 @@
   ======================== -->
   <!-- GSAP (bắt buộc cho carousel animation) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <!-- Carousel script (từ gradientslider) -->
+  <!-- Các plugin của GSAP từ draggable-grid -->
+  <script src="assets/js/Flip.js"></script>
+  <script src="assets/js/SplitText.js"></script>
+  <!-- Carousel script -->
   <script src="assets/js/carousel.js" defer></script>
   <!-- JS chính của dự án -->
   <script src="assets/js/main.js"></script>
