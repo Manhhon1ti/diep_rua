@@ -1014,20 +1014,6 @@ async function init() {
   
   // Khởi tạo hiệu ứng Details (Flip & SplitText) sau khi card đã load
   window.detailsHandler = new DetailsHandler();
-  
-  // Khởi tạo hiệu ứng gợn sóng mặt nước (jquery.ripples)
-  setTimeout(() => {
-    if (window.jQuery && $.fn.ripples) {
-      try {
-        $(cardsRoot).find('.card__img').ripples({
-          perturbance: 0.04,
-          resolution: 425
-        });
-      } catch (e) {
-        console.error("Ripples error:", e);
-      }
-    }
-  }, 100);
 }
 
 // ============================================================================
