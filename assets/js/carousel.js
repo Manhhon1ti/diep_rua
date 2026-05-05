@@ -119,7 +119,7 @@ function preloadImageLinks(srcs) {
  */
 function waitForImages() {
   const promises = items.map((it) => {
-    const img = it.el.querySelector('img');
+    const img = it.imgObj;
     if (!img || img.complete) return Promise.resolve();
 
     return new Promise((resolve) => {
@@ -138,13 +138,10 @@ function waitForImages() {
  */
 async function decodeAllImages() {
   const tasks = items.map((it) => {
-    const img = it.el.querySelector('img');
-    if (!img) return Promise.resolve();
-
-    if (typeof img.decode === 'function') {
-      return img.decode().catch(() => {});
+    const img = it.imgObj;
+    if (img && img.decode) {
+      return img.decode().catch(() => {}); // Ignore decode errors
     }
-
     return Promise.resolve();
   });
 
@@ -181,22 +178,16 @@ function createCards() {
 
     card.appendChild(img);
     fragment.appendChild(card);
-    items.push({ el: card, x: i * STEP });
+    
+    // Tạo object Image lưu trong items để lấy màu nền và tính toán load
+    const imgObj = new Image();
+    imgObj.src = src;
+    
+    items.push({ el: card, x: i * STEP, imgObj: imgObj });
   });
 
   cardsRoot.appendChild(fragment);
 
-  // Khởi tạo hiệu ứng gợn sóng nước (ripples)
-  if (window.jQuery && $.fn.ripples) {
-    try {
-      $(cardsRoot).find('.card__img').ripples({
-        perturbance: 0.04,
-        resolution: 425
-      });
-    } catch (e) {
-      console.error("Ripples error:", e);
-    }
-  }
 }
 
 /**
@@ -569,8 +560,7 @@ function extractColors(img, idx) {
  */
 function buildPalette() {
   gradPalette = items.map((it, i) => {
-    const img = it.el.querySelector('img');
-    return extractColors(img, i);
+    return extractColors(it.imgObj, i);
   });
 }
 
@@ -946,7 +936,7 @@ async function init() {
 
   // Force browser to paint images
   items.forEach((it) => {
-    const img = it.el.querySelector('img');
+    const img = it.el.querySelector('.card__img');
     if (img) void img.offsetHeight;
   });
 
