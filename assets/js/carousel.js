@@ -169,12 +169,12 @@ function createCards() {
     card.className = 'card';
     card.style.willChange = 'transform'; // Force GPU compositing
 
-    const img = new Image();
+    const img = document.createElement('div');
     img.className = 'card__img';
-    img.decoding = 'async';
-    img.loading = 'eager';
-    img.draggable = false;
-    img.src = src;
+    img.style.backgroundImage = `url(${src})`;
+    img.style.backgroundSize = 'cover';
+    img.style.backgroundPosition = 'center';
+    img.dataset.src = src;
 
     // Gắn ID để link với bảng chi tiết
     card.dataset.id = i;
@@ -185,6 +185,18 @@ function createCards() {
   });
 
   cardsRoot.appendChild(fragment);
+
+  // Khởi tạo hiệu ứng gợn sóng nước (ripples)
+  if (window.jQuery && $.fn.ripples) {
+    try {
+      $(cardsRoot).find('.card__img').ripples({
+        perturbance: 0.04,
+        resolution: 425
+      });
+    } catch (e) {
+      console.error("Ripples error:", e);
+    }
+  }
 }
 
 /**
