@@ -15,10 +15,10 @@
   width: 50vw;
   height: 100vh;
   padding: 3vw 4vw;
-  background-color: #f1f1f1;
+  background-color: #ffffff; /* Đổi thành màu trắng tinh */
   color: #333; /* Đảm bảo chữ dễ đọc trên nền sáng */
   transform: translate3d(50vw, 0, 0);
-  z-index: 2000; /* Cao hơn cả stage và loader */
+  z-index: 3000; /* Đặt cao hơn cả footer (2000) để luôn nổi lên trên cùng */
   box-shadow: -10px 0 30px rgba(0,0,0,0.1);
 
   @media (max-width: 600px) {
@@ -29,7 +29,7 @@
 }
 
 .details__title {
-  margin-bottom: 4vw;
+  margin-bottom: 2.5vw; /* Điều chỉnh lại theo ý muốn */
   position: relative;
   display: grid;
 
@@ -54,7 +54,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 2vw;
+  gap: 1.5vw; /* Đã giảm từ 2vw xuống để kéo text gần card hơn */
 }
 
 .details__texts {
@@ -121,6 +121,7 @@
   object-fit: cover; /* Đổ đầy toàn bộ khung cố định, không bị thừa khoảng trống */
   object-position: center; /* Căn giữa nội dung ảnh */
   border-radius: 15px; /* Giữ bo góc giống card */
+  border: 1px solid #4db849; /* Viền mỏng 1px màu xanh */
 }
 
 .details__texts p {
@@ -133,7 +134,7 @@
   width: 3vw;
   height: 3vw;
   transform: translate(-50%, -50%) scale(0);
-  z-index: 2001; /* Trái lên trên cùng */
+  z-index: 3001; /* Trái lên trên cùng */
   pointer-events: none;
 }
 
