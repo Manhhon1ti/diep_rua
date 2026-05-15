@@ -53,23 +53,37 @@
 .details__body {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: flex-start; /* Đổi từ end sang flex-start để ảnh và text căn bằng nhau ở trên cùng */
   gap: 1.5vw; /* Đã giảm từ 2vw xuống để kéo text gần card hơn */
+  max-height: 80vh; /* Giới hạn chiều cao cho toàn bộ body để có thể cuộn cả ảnh và text */
+  overflow-y: auto; /* Thêm thanh cuộn cho toàn bộ phần thân */
+  padding-right: 1vw; /* Khoảng cách với thanh cuộn */
+  padding-bottom: 5vw; /* Khoảng cách phía dưới khi cuộn kịch kim */
 }
 
 .details__texts {
   position: relative;
-  height: 100%;
-  line-height: 1.5;
-  display: grid;
-  max-width: 15rem;
+  height: auto;
+  line-height: 1.6;
+  display: grid; /* Sử dụng grid để các đoạn chữ đè lên nhau cùng 1 vị trí */
+  flex: 1; /* Tự động co giãn để chiếm hết phần không gian còn lại */
+  min-width: 300px; /* Chỉ rớt dòng (wrap) khi màn hình quá nhỏ (vd: mobile) */
 }
 
-.details__texts span {
-  display: block;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: bold;
+.details__texts [data-text] {
+  grid-area: 1 / -1; /* Đảm bảo tất cả các thẻ p đều nằm đè lên nhau ở cùng gốc tọa độ */
+}
+
+.details__texts span.section-title {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.3rem;
+  width: auto;
 }
 
 .details__texts button {
@@ -125,8 +139,10 @@
 }
 
 .details__texts p {
-  font-size: 0.85rem;
+  font-size: 1rem;
+  margin-top: 0; /* Xóa margin top để căn bằng tuyệt đối với mép trên của ảnh */
   margin-bottom: 1vw;
+  font-family: 'Roboto', sans-serif; /* Đổi font chữ giống trong ảnh */
 }
 
 .cross {
@@ -164,4 +180,31 @@
 
 .details.--is-showing {
   opacity: 1;
+}
+
+.details__galleries {
+  width: 100%;
+  margin-top: 2vw;
+  padding-right: 1.5vw;
+}
+
+.gallery {
+  display: none; /* Hide by default */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5vw;
+  width: 100%;
+}
+
+.gallery img {
+  width: 100%;
+  aspect-ratio: 1; /* Make them square */
+  object-fit: cover;
+  border-radius: 12px; /* Slightly rounded corners */
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+@media (max-width: 600px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

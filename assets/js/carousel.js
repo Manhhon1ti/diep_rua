@@ -709,12 +709,12 @@ stage.addEventListener(
   'wheel',
   (e) => {
     if (isEntering) return;
-    e.preventDefault();
-
+    
+    // Xóa e.preventDefault() để trang có thể cuộn xuống footer
     const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     vX += delta * WHEEL_SENS * 20;
   },
-  { passive: false }
+  { passive: true }
 );
 
 // Prevent default drag behavior
@@ -1032,9 +1032,8 @@ class DetailsHandler {
     this.titles = this.details.querySelectorAll('.details__title p');
     this.texts = this.details.querySelectorAll('.details__body [data-text]');
     
-    // Khởi tạo hiệu ứng chữ
+    // Khởi tạo hiệu ứng chữ (chỉ dùng cho title, bỏ qua texts để tránh lỗi rớt dòng)
     new SplitText(this.titles, { type: "lines, chars", mask: "lines", charsClass: "char" });
-    new SplitText(this.texts, { type: "lines", mask: "lines", linesClass: "line" });
     
     this.SHOW_DETAILS = false;
     this.currentProduct = null;
@@ -1105,10 +1104,27 @@ class DetailsHandler {
         y: 0, duration: 1.2, delay: 0.5, ease: "power4.out", stagger: 0.03
       });
     }
+    
+    // Hiển thị đoạn text hoàn chỉnh một lần thay vì từng dòng để tránh lỗi xuống dòng
+    this.texts.forEach(t => t.style.opacity = 0); // Đảm bảo các text khác đang ẩn
     if (text) {
-      gsap.to(text.querySelectorAll('.line'), {
-        y: 0, duration: 1.2, delay: 0.5, ease: "power4.out", stagger: 0.05
-      });
+      gsap.fromTo(text, 
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1.2, delay: 0.5, ease: "power4.out" }
+      );
+    }
+
+    // Hiển thị và chạy hiệu ứng cho gallery ảnh
+    const galleries = this.details.querySelectorAll('.gallery');
+    galleries.forEach(g => { g.style.display = 'none'; g.classList.remove('--is-active'); });
+    const activeGallery = this.details.querySelector(`.gallery[data-gallery="${id}"]`);
+    if (activeGallery) {
+      activeGallery.style.display = 'grid';
+      activeGallery.classList.add('--is-active');
+      gsap.fromTo(activeGallery.querySelectorAll('img'), 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 1, stagger: 0.1, delay: 0.8, ease: "power4.out" }
+      );
     }
   }
   
@@ -1140,8 +1156,14 @@ class DetailsHandler {
       gsap.to(title.querySelectorAll('.char'), { y: "100%", duration: 0.4, ease: "power2.in" });
     });
     this.texts.forEach(text => {
-      gsap.to(text.querySelectorAll('.line'), { y: "100%", duration: 0.4, ease: "power2.in" });
+      gsap.to(text, { opacity: 0, y: 30, duration: 0.4, ease: "power2.in" });
     });
+    
+    // Ẩn gallery ảnh
+    const activeGallery = this.details.querySelector('.gallery.--is-active');
+    if (activeGallery) {
+      gsap.to(activeGallery.querySelectorAll('img'), { opacity: 0, y: 30, duration: 0.4, ease: "power2.in" });
+    }
   }
   
   flipProduct(product) {
