@@ -9,16 +9,14 @@
 // ============================================================================
 
 const IMAGES = [
-  './assets/img/turtle_1.webp',
-  './assets/img/turtle_2.webp',
-  './assets/img/turtle_3.webp',
-  './assets/img/turtle_4.webp',
-  './assets/img/turtle_5.webp',
-  './assets/img/turtle_6.webp',
-  './assets/img/img07.webp',
-  './assets/img/img08.webp',
-  './assets/img/img09.webp',
-  './assets/img/diep_rua.webp',
+  './assets/img/web_rua-01.webp',
+  './assets/img/web_rua-02.webp',
+  './assets/img/web_rua-03.webp',
+  './assets/img/web_rua-04.webp',
+  './assets/img/web_rua-05.webp',
+  './assets/img/web_rua-06.webp',
+  './assets/img/web_rua-07.webp',
+  './assets/img/web_rua-08.webp',
 ];
 
 // Physics constants

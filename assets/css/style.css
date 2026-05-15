@@ -1,4 +1,14 @@
 /* ============================================================
+   FONTS
+   ============================================================ */
+@font-face {
+  font-family: 'Plus Jakarta Sans Bold';
+  src: url('../fonts/PlusJakartaSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* ============================================================
    RESET CSS — Xóa style mặc định của trình duyệt
    ============================================================ */
 *, *::before, *::after {
@@ -74,7 +84,120 @@ button, input, textarea, select {
    HEADER
    Thêm style cho header tại đây
    ============================================================ */
+#main-header {
+  font-family: 'Plus Jakarta Sans Bold', sans-serif;
+}
 
+/* Style for the new header */
+.header_2 {
+  display: block;
+  width: 100%;
+}
+.header_2 .clr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1430px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.header_2 .elms_left,
+.header_2 .elms_right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+/* Override messy inline margins */
+.header_2 .cz_elm {
+  margin: 0 !important;
+}
+
+/* Text and Logo */
+.header_2 .it_text {
+  color: #fff !important;
+  line-height: 1.2;
+}
+
+/* Navigation Menu */
+.sf-menu {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 25px;
+}
+.sf-menu > li {
+  position: relative;
+}
+.sf-menu > li > a {
+  color: #fff !important;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+}
+.sf-menu > li > a:hover {
+  color: #4db849 !important;
+}
+
+/* Sub-menu styling */
+.sf-menu .sub-menu {
+  display: none !important;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #004d22;
+  padding: 10px 0;
+  border-radius: 4px;
+  min-width: 220px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+.sf-menu > li:hover .sub-menu {
+  display: block !important;
+}
+.sf-menu .sub-menu li a {
+  color: #fff !important;
+  padding: 10px 20px;
+  display: block;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+.sf-menu .sub-menu li a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* Donate Button */
+.sf-menu > li > a[href="/donate/"] {
+  background: #fff !important;
+  color: #00632B !important;
+  padding: 8px 20px !important;
+  border-radius: 30px;
+  font-weight: bold;
+}
+.sf-menu > li > a[href="/donate/"]:hover {
+  background: #4db849 !important;
+  color: #fff !important;
+}
+
+/* Icons */
+.header_2 .fa-search,
+.header_2 .shop_icon i {
+  color: #fff !important;
+  font-size: 18px;
+  background: transparent !important;
+  padding: 0 !important;
+  cursor: pointer;
+}
+.header_2 .outer_search {
+  display: none; /* Hide complex search form to keep it neat for now */
+}
 
 /* ============================================================
    HERO / BANNER
@@ -96,9 +219,122 @@ button, input, textarea, select {
 
 /* ============================================================
    FOOTER
-   Thêm style cho footer tại đây
    ============================================================ */
-
+#site_footer {
+  background-color: rgba(0, 99, 43, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  padding-top: 15px;
+  font-family: 'Plus Jakarta Sans Bold', sans-serif;
+  z-index: 2000;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin-top: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+#site_footer a {
+  color: #fff;
+  transition: opacity 0.3s;
+}
+#site_footer a:hover {
+  opacity: 0.8;
+}
+.cz_middle_footer .row.clr {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center; /* Center align vertically instead of flex-end */
+  max-width: 1430px;
+  margin: 0 auto;
+  gap: 40px; /* Increase gap between columns */
+  padding: 0 40px; /* More padding on sides */
+}
+.cz_middle_footer .col.s4 {
+  flex: 1;
+}
+.codevz-widget-title {
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #4db849;
+}
+.footer_widget p strong {
+  font-size: 20px; /* Make the title pop out more */
+  letter-spacing: 1px;
+  color: #fff;
+  display: block;
+  margin-bottom: 12px;
+}
+.footer_widget p {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+.cz_social_icons a {
+  display: inline-flex; /* Use inline-flex to flow horizontally or flex for list */
+  align-items: center;
+  margin-bottom: 8px;
+  margin-right: 20px; /* Space if they flow horizontally */
+  font-size: 13px;
+  color: rgba(255,255,255,0.9) !important;
+}
+.cz_social_icons a:hover {
+  color: #4db849 !important;
+}
+.cz_social_icons a i {
+  margin-right: 8px;
+  font-size: 18px; /* Bigger icons */
+  color: #fff;
+}
+/* Newsletter Form */
+.wpcf7-form input[type="email"] {
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.wpcf7-form input[type="email"]::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+.wpcf7-form button[type="submit"] {
+  background: #fff;
+  color: #00632B;
+  padding: 6px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 12px;
+}
+.wpcf7-form button[type="submit"]:hover {
+  background: #4db849;
+  color: #fff;
+}
+/* Facebook Widget scaling */
+.codevz-widget-facebook {
+  transform: scale(0.85); /* Slightly larger */
+  transform-origin: center right; /* Align nicely to the right */
+  margin: 0; 
+  display: flex;
+  justify-content: flex-end; /* Push to the right */
+}
+/* Bottom Footer */
+.footer_2 {
+  background-color: rgba(0, 77, 34, 0.7);
+  padding: 8px 0;
+  margin-top: 15px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.footer_2 .it_text {
+  font-size: 12px !important;
+}
 
 /* ============================================================
    RESPONSIVE — Media queries
