@@ -41,9 +41,9 @@
 .details__title p {
   grid-area: 1 / -1;
   overflow: hidden;
-  font-size: 3vw;
+  font-size: 55px;
   margin: 0;
-  font-family: inherit;
+  font-family: 'Plus Jakarta Sans Bold', sans-serif;
 
   @media (max-width: 600px) {
     font-size: 2rem;
